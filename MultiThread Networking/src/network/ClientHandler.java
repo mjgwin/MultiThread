@@ -8,7 +8,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.HashMap;
 
-public class ClientHandler implements Runnable{
+public class ClientHandler implements Runnable {
 
 	private Socket clientSocket;
 	private boolean running, login;
@@ -18,14 +18,14 @@ public class ClientHandler implements Runnable{
 	private DataInputStream dataIn;
 	private DataOutputStream dataOut;
 	private String username, password;
-	
+
 	public ClientHandler(Socket clientSocket, Server parentServer) {
 		this.clientSocket = clientSocket;
 		this.parentServer = parentServer;
 		login = false;
 		init();
 	}
-	
+
 	private void init() {
 		try {
 			inStream = clientSocket.getInputStream();
@@ -79,15 +79,20 @@ public class ClientHandler implements Runnable{
 				if(inString.equals(null)) {
 					continue;
 				}else if(inString.equals("/exit")) {
-					System.out.println("<Server> closing thread for user " + username);
+					System.out.println("<Server> closing thread for user: " + username);
+					dataOut.writeUTF("<Server> Connection closed");
+					running = false;
 					shutDown();
+				}else {
+					System.out.println("<Server> Unhandled command from user: " + username);
+					dataOut.writeUTF("<Server> Command not recognized, please try again");
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
+
 	private void shutDown() {
 		try {
 			clientSocket.close();

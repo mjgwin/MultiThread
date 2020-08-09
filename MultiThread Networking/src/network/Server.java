@@ -23,6 +23,7 @@ public class Server {
 		}
 		
 		if(ss != null) {
+			System.out.println("<Server> Starting on port " + port);
 			running = true;
 			parseConnections();
 		}else {
@@ -35,7 +36,7 @@ public class Server {
 		while(running){
 			try {
 				Socket clientSocket = ss.accept();
-				System.out.println("Connection from " + clientSocket.getInetAddress());
+				System.out.println("<Server> Connection from " + clientSocket.getInetAddress());
 				Thread clientThread = new Thread(new ClientHandler(clientSocket, this));
 				clientThread.start();
 			} catch (IOException e) {

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Scanner;
 
 public class Client {
@@ -78,17 +79,31 @@ public class Client {
 	
 	private void processRequests() {
 		running = true;
+		Scanner sc = new Scanner(System.in);
 		while(running) {
 			try {
 				String inString = dataIn.readUTF();
 				if(inString.equals(null)) {
-					continue;
+					//continue
+				}else if(inString.equals("<Server> Connection closed")) {
+					System.out.println(inString);
+					System.out.println("<Client> Shutting down...");
+					running = false;
+					shutDown();
+					break;
 				}else {
 					System.out.println(inString);
 				}
+				
+				String outString = sc.next();
+				if(outString.equals(null)) {
+					continue;
+				}else {
+					dataOut.writeUTF(outString);
+				}
 			} catch (IOException e) {
 				e.printStackTrace();
-			}
+			} 
 		}
 	}
 	
@@ -99,4 +114,5 @@ public class Client {
 			e.printStackTrace();
 		}
 	}
+	
 }
